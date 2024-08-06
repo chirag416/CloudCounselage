@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 
@@ -12,31 +13,42 @@ const AuthProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      console.log("Login response status:", response.status); // Debug log
 
       if (!response.ok) throw new Error('Login failed');
 
       const data = await response.json();
-      console.log("Login response data:", data); // Debug log
-
-      if (data && data._id && data.name && data.email && data.token) {
-        setUser({
-          _id: data._id,
-          name: data.name,
-          email: data.email,
-          token: data.token,
-        });
-      } else {
-        console.error("User data not received properly."); // Debug log
-      }
+      setUser({
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        token: data.token,
+      });
     } catch (error) {
-      console.error('Login error:', error); // Debug log
-      throw error; // Rethrow to handle in Login component
+      toast.error('Login failed');
+      throw error;
+    }
+  };
+
+  const updateSkills = async (userId, newSkill) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/skills`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skill: newSkill }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update skills');
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+    } catch (error) {
+      toast.error('Failed to update skills');
+      throw error;
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login }}>
+    <AuthContext.Provider value={{ user, login, updateSkills }}>
       {children}
     </AuthContext.Provider>
   );

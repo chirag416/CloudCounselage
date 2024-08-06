@@ -34,6 +34,7 @@ const registerUser = async (req, res) => {
   }
 };
 
+
 // Login a user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -64,4 +65,21 @@ const generateToken = (id) => {
   });
 };
 
-module.exports = { registerUser, loginUser };
+// Add Skill to User
+const addSkill = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.skills.push(req.body.skill);
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, addSkill };

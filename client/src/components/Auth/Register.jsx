@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Paper, IconButton, InputAdornment } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify'; // Import toast
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { TextField, Button, Container, Typography, Paper } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,24 +17,16 @@ const Register = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.message === 'User already exists') {
-          toast.error('User already registered. Please use a different email.'); // Show error popup for existing user
-        } else {
-          toast.error('Registration failed. Please try again.'); // Generic error message
-        }
-        throw new Error('Registration failed');
-      }
+
       const data = await response.json();
-      console.log('Registration successful:', data);
+      if (!response.ok) throw new Error(data.message || 'Registration failed');
+
+      toast.success('Registration successful');
       navigate('/login'); // Redirect to login page on success
     } catch (error) {
-      console.error('Registration error:', error);
+      toast.error(error.message);
     }
   };
-
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   return (
     <Container component="main" maxWidth="xs" sx={{ mt: 8 }}>
@@ -49,53 +38,33 @@ const Register = () => {
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="name"
-            label="Full Name"
+            label="Name"
             name="name"
-            autoComplete="name"
-            autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
             name="email"
-            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Password"
-            type={showPassword ? 'text' : 'password'} // Toggle password type
+            type="password"
             id="password"
-            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
           />
           <Button
             type="submit"
@@ -106,15 +75,12 @@ const Register = () => {
           >
             Register
           </Button>
-          <Button
-            fullWidth
-            variant="text"
-            color="secondary"
-            onClick={() => navigate('/login')}
-          >
-            Already have an account? Login
-          </Button>
         </form>
+        <Link to="/login">
+          <Typography variant="body2" color="primary">
+            Already have an account? Login
+          </Typography>
+        </Link>
       </Paper>
     </Container>
   );

@@ -1,29 +1,38 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Container, Typography, Paper, List, ListItem, ListItemText, Divider, TextField, Button } from '@mui/material';
 import AuthContext from '../../context/AuthContext';
-import { Container, Typography, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
-  const { user } = useContext(AuthContext);
+  const { user, updateSkills } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
+  const [newSkill, setNewSkill] = useState('');
 
   useEffect(() => {
-    console.log("User in Profile:", user); // Debug log
-
     if (user) {
-      console.log("User found:", user); // Debug log
       setLoading(false);
-    } else {
-      console.log("User data is still null."); // Debug log
     }
   }, [user]);
 
+  const handleAddSkill = async () => {
+    if (newSkill.trim() === '') {
+      toast.error('Skill cannot be empty');
+      return;
+    }
+    try {
+      await updateSkills(user._id, newSkill);
+      setNewSkill('');
+      toast.success('Skill added successfully');
+    } catch (error) {
+      toast.error('Failed to add skill');
+    }
+  };
+
   if (loading) {
-    console.log("User data loading...");
     return <Typography>Loading...</Typography>;
   }
 
   if (!user) {
-    console.log("No user found.");
     return <Typography>No user data available</Typography>;
   }
 
@@ -51,6 +60,24 @@ const Profile = () => {
             <Typography>No skills available</Typography>
           )}
         </List>
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          id="newSkill"
+          label="Add New Skill"
+          name="newSkill"
+          value={newSkill}
+          onChange={(e) => setNewSkill(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddSkill}
+          sx={{ mt: 2 }}
+        >
+          Add Skill
+        </Button>
 
         <Typography variant="h5" component="h2" sx={{ mt: 4 }}>
           Experiences
