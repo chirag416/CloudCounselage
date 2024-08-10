@@ -4,22 +4,28 @@ import { toast } from 'react-toastify';
 
 const RequestsPage = () => {
   const [requests, setRequests] = useState([]);
+  const userId = JSON.parse(localStorage.getItem('user'))?._id;
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const token = JSON.parse(localStorage.getItem('user'))?.token;
 
-        if (!token) {
-          toast.error('User not authenticated');
+        if (!token || !userId) {
+          toast.error('User not authenticated or user ID not available');
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/users/requests`, {
+        const response = await fetch(`http://localhost:3000/api/users/${userId}/requests`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch requests: ${response.statusText}`);
+        }
+
         const data = await response.json();
         setRequests(data);
       } catch (error) {
@@ -28,18 +34,18 @@ const RequestsPage = () => {
     };
 
     fetchRequests();
-  }, []);
+  }, [userId]);
 
   const handleAccept = async (requestId) => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token;
 
-      if (!token) {
-        toast.error('User not authenticated');
+      if (!token || !userId) {
+        toast.error('User not authenticated or user ID not available');
         return;
       }
 
-      await fetch(`http://localhost:3000/api/users/requests/${requestId}/accept`, {
+      await fetch(`http://localhost:3000/api/users/${userId}/requests/${requestId}/accept`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,12 +64,12 @@ const RequestsPage = () => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token;
 
-      if (!token) {
-        toast.error('User not authenticated');
+      if (!token || !userId) {
+        toast.error('User not authenticated or user ID not available');
         return;
       }
 
-      await fetch(`http://localhost:3000/api/users/requests/${requestId}/reject`, {
+      await fetch(`http://localhost:3000/api/users/${userId}/requests/${requestId}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
