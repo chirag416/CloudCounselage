@@ -1,18 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Container, Typography, Paper, List, ListItem, ListItemText, Divider, TextField, Button } from '@mui/material';
 import AuthContext from '../../context/AuthContext';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import Search from './SearchComponent';
+import MailIconComponent from './MailIconComponent';
 
 const Profile = () => {
-  const { user, updateSkills } = useContext(AuthContext);
+  const { user, updateSkills, logout } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [newSkill, setNewSkill] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
       setLoading(false);
+    } else {
+      navigate('/login');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const handleAddSkill = async () => {
     if (newSkill.trim() === '') {
@@ -20,6 +26,7 @@ const Profile = () => {
       return;
     }
     try {
+      console.log('Adding skill:', newSkill);
       await updateSkills(user._id, newSkill);
       setNewSkill('');
       toast.success('Skill added successfully');
@@ -28,16 +35,19 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   if (loading) {
     return <Typography>Loading...</Typography>;
   }
 
-  if (!user) {
-    return <Typography>No user data available</Typography>;
-  }
-
   return (
     <Container component="main" maxWidth="md" sx={{ mt: 8 }}>
+      <Search />
+      <MailIconComponent />
       <Paper elevation={3} sx={{ padding: 3 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {user.name}
@@ -57,7 +67,7 @@ const Profile = () => {
               </ListItem>
             ))
           ) : (
-            <Typography>No skills available</Typography>
+            <Typography>No skills available. Add some skills to get started!</Typography>
           )}
         </List>
         <TextField
@@ -98,6 +108,16 @@ const Profile = () => {
             <Typography>No experiences available</Typography>
           )}
         </List>
+
+        {/* Logout Button */}
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleLogout}
+          sx={{ mt: 4 }}
+        >
+          Logout
+        </Button>
       </Paper>
     </Container>
   );

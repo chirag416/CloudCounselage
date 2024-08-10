@@ -6,6 +6,7 @@ import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
 import Profile from './components/Dashboard/Profile';
 import NotFound from './pages/NotFound';
+import RequestsPage from './components/Dashboard/RequestsPage';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/requests" element={<RequestsPage />} />
         </Routes>
       </Router>
     </AuthProvider>

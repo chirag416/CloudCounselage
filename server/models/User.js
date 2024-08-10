@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
-// const bcrypt = require('bcryptjs');
+
+// Schema for connection requests
+const connectionRequestSchema = new mongoose.Schema({
+  sender: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'accepted', 'rejected'], 
+    default: 'pending' 
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
+});
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -18,16 +34,8 @@ const userSchema = new mongoose.Schema({
   ],
   skills: [String],
   connections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  connectionRequests: [connectionRequestSchema], // Add connection requests array
 }, { timestamps: true });
-
-// Password encryption
-// userSchema.pre('save', async function (next) {
-//   if (!this.isModified('password')) {
-//     next();
-//   }
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = await bcrypt.hash(this.password, salt);
-// });
 
 const User = mongoose.model('User', userSchema);
 
