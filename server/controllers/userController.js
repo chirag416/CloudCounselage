@@ -114,10 +114,21 @@ const connectUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Check if the connection request already exists
+    const existingRequest = user.connectionRequests.find(
+      (request) => request.sender.toString() === connectUser._id.toString()
+    );
+
+    if (existingRequest) {
+      return res.status(400).json({ message: 'Connection request already sent' });
+    }
+
+    // Check if already connected
     if (user.connections.includes(id)) {
       return res.status(400).json({ message: 'Already connected' });
     }
 
+    // Send connection request
     user.connectionRequests.push({ sender: req.user.id });
     await user.save();
 
@@ -130,6 +141,7 @@ const connectUser = async (req, res) => {
     res.status(500).json({ message: `Server error: ${error.message}` });
   }
 };
+
 
 // Get Connection Requests
 const getConnectionRequests = async (req, res) => {

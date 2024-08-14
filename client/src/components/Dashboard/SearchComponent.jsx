@@ -9,10 +9,13 @@ const Search = () => {
   const handleSearch = async () => {
     try {
       const response = await fetch(`http://localhost:3000/api/users/search?query=${query}`);
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.statusText}`);
+      }
       const data = await response.json();
       setResults(data);
     } catch (error) {
-      toast.error('Failed to search users');
+      toast.error(`Failed to search users: ${error.message}`);
     }
   };
 
@@ -34,13 +37,14 @@ const Search = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to send request: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(`Failed to send request: ${errorData.message || response.statusText}`);
       }
 
       toast.success('Connection request sent');
     } catch (error) {
       console.error('Failed to send connection request:', error);
-      toast.error('Failed to send connection request');
+      toast.error(`Failed to send connection request: ${error.message}`);
     }
   };
 
