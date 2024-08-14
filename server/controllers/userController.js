@@ -154,19 +154,45 @@ const getConnectionRequests = async (req, res) => {
 // Accept Connection Request
 const acceptConnectionRequest = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    const request = user.connectionRequests.id(req.params.requestId);
+    const { userId, requestId } = req.params;
 
-    if (!request) {
-      return res.status(404).json({ message: 'Request not found' });
+    // Find the receiver (user accepting the request)
+    const receiver = await User.findById(userId);
+    if (!receiver) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    user.connections.push(request.sender);
-    user.connectionRequests.id(req.params.requestId).remove();
-    await user.save();
+    // Find the connection request in the receiver's connectionRequests array
+    const requestIndex = receiver.connectionRequests.findIndex(req => req._id.toString() === requestId);
+    if (requestIndex === -1) {
+      return res.status(404).json({ message: 'Connection request not found' });
+    }
 
-    res.json({ message: 'Connection accepted' });
+    // Find the sender using the sender's ID stored in the connection request
+    const request = receiver.connectionRequests[requestIndex];
+    const sender = await User.findById(request.sender);
+    if (!sender) {
+      return res.status(404).json({ message: 'Request sender not found' });
+    }
+
+    // Update the connections array for both the receiver and the sender
+    if (!receiver.connections.includes(sender._id)) {
+      receiver.connections.push(sender._id);
+    }
+    if (!sender.connections.includes(receiver._id)) {
+      sender.connections.push(receiver._id);
+    }
+
+    // Remove the request from the receiver's connectionRequests array
+    receiver.connectionRequests.splice(requestIndex, 1);
+
+    // Save the updated users
+    await receiver.save();
+    await sender.save();
+
+    res.status(200).json({ message: 'Connection request accepted' });
   } catch (error) {
+    console.error('Error accepting connection request:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

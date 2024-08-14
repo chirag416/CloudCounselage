@@ -25,7 +25,10 @@ router.use(protect);  // Apply to all routes below this point
 router.put('/:id/skills',protect, addSkill);  // Use PUT to update skills
 router.post('/connect/:id', connectUser);
 router.get('/:id/requests', getConnectionRequests);
-router.post('/requests/:requestId/accept', acceptConnectionRequest);
+router.post('/:userId/requests/:requestId/accept', (req, res, next) => {
+  console.log('Accept connection request route hit:', req.params);
+  next();
+}, protect, acceptConnectionRequest);
 router.post('/requests/:requestId/reject', rejectConnectionRequest);
 
 module.exports = router;

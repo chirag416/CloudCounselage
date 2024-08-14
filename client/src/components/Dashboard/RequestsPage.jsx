@@ -11,6 +11,9 @@ const RequestsPage = () => {
       try {
         const token = JSON.parse(localStorage.getItem('user'))?.token;
 
+    if (!token) {
+      console.error('No token found');
+    }
         if (!token || !userId) {
           toast.error('User not authenticated or user ID not available');
           return;
@@ -39,26 +42,37 @@ const RequestsPage = () => {
   const handleAccept = async (requestId) => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token;
-
+      const userId = JSON.parse(localStorage.getItem('user'))?._id;
+  
       if (!token || !userId) {
         toast.error('User not authenticated or user ID not available');
         return;
       }
-
-      await fetch(`http://localhost:3000/api/users/${userId}/requests/${requestId}/accept`, {
+  
+      // Debugging lines
+      console.log('Accepting request:', { userId, requestId });
+      console.log(`Request URL: http://localhost:3000/api/users/${userId}/requests/${requestId}/accept`);
+  
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/requests/${requestId}/accept`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
+      if (!response.ok) {
+        throw new Error(`Failed to accept connection request: ${response.statusText}`);
+      }
+  
       toast.success('Connection request accepted');
       setRequests(requests.filter((req) => req._id !== requestId));
     } catch (error) {
+      console.error('Error in handleAccept:', error);
       toast.error('Failed to accept connection request');
     }
   };
+  
 
   const handleReject = async (requestId) => {
     try {
