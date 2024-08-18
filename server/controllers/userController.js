@@ -210,23 +210,36 @@ const acceptConnectionRequest = async (req, res) => {
 };
 
 // Reject Connection Request
+// Reject Connection Request
 const rejectConnectionRequest = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    const request = user.connectionRequests.id(req.params.requestId);
+    const { userId, requestId } = req.params;
 
-    if (!request) {
-      return res.status(404).json({ message: 'Request not found' });
+    // Find the receiver (user rejecting the request)
+    const receiver = await User.findById(userId);
+    if (!receiver) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    user.connectionRequests.id(req.params.requestId).remove();
-    await user.save();
+    // Find the connection request in the receiver's connectionRequests array
+    const requestIndex = receiver.connectionRequests.findIndex(req => req._id.toString() === requestId);
+    if (requestIndex === -1) {
+      return res.status(404).json({ message: 'Connection request not found' });
+    }
 
-    res.json({ message: 'Connection rejected' });
+    // Remove the request from the receiver's connectionRequests array
+    receiver.connectionRequests.splice(requestIndex, 1);
+
+    // Save the updated receiver
+    await receiver.save();
+
+    res.status(200).json({ message: 'Connection request rejected' });
   } catch (error) {
+    console.error('Error rejecting connection request:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 module.exports = {
   registerUser,

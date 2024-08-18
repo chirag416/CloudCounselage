@@ -29,6 +29,6 @@ router.post('/:userId/requests/:requestId/accept', (req, res, next) => {
   console.log('Accept connection request route hit:', req.params);
   next();
 }, protect, acceptConnectionRequest);
-router.post('/requests/:requestId/reject', rejectConnectionRequest);
+router.post('/:userId/requests/:requestId/reject', rejectConnectionRequest);
 
 module.exports = router;

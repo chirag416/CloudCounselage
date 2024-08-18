@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 const Search = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
+  const currentUserId = JSON.parse(localStorage.getItem('user'))?._id; // Get current user ID
 
   const handleSearch = async () => {
     try {
@@ -13,7 +14,9 @@ const Search = () => {
         throw new Error(`Search failed: ${response.statusText}`);
       }
       const data = await response.json();
-      setResults(data);
+      // Exclude the current user from search results
+      const filteredResults = data.filter(user => user._id !== currentUserId);
+      setResults(filteredResults);
     } catch (error) {
       toast.error(`Failed to search users: ${error.message}`);
     }

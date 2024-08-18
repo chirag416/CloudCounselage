@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Container, List, ListItem, ListItemText, Button } from '@mui/material';
+import { Container, List, ListItem, ListItemText, Button, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const RequestsPage = () => {
   const [requests, setRequests] = useState([]);
   const userId = JSON.parse(localStorage.getItem('user'))?._id;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const token = JSON.parse(localStorage.getItem('user'))?.token;
 
-    if (!token) {
-      console.error('No token found');
-    }
         if (!token || !userId) {
           toast.error('User not authenticated or user ID not available');
           return;
@@ -42,17 +41,12 @@ const RequestsPage = () => {
   const handleAccept = async (requestId) => {
     try {
       const token = JSON.parse(localStorage.getItem('user'))?.token;
-      const userId = JSON.parse(localStorage.getItem('user'))?._id;
-  
+
       if (!token || !userId) {
         toast.error('User not authenticated or user ID not available');
         return;
       }
-  
-      // Debugging lines
-      console.log('Accepting request:', { userId, requestId });
-      console.log(`Request URL: http://localhost:3000/api/users/${userId}/requests/${requestId}/accept`);
-  
+
       const response = await fetch(`http://localhost:3000/api/users/${userId}/requests/${requestId}/accept`, {
         method: 'POST',
         headers: {
@@ -60,19 +54,17 @@ const RequestsPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`Failed to accept connection request: ${response.statusText}`);
       }
-  
+
       toast.success('Connection request accepted');
       setRequests(requests.filter((req) => req._id !== requestId));
     } catch (error) {
-      console.error('Error in handleAccept:', error);
       toast.error('Failed to accept connection request');
     }
   };
-  
 
   const handleReject = async (requestId) => {
     try {
@@ -98,17 +90,37 @@ const RequestsPage = () => {
     }
   };
 
+  const handleGoToProfile = () => {
+    navigate('/profile'); // Adjust the path to match your route configuration
+  };
+
   return (
     <Container component="main" maxWidth="md">
-      <List>
-        {requests.map((req) => (
-          <ListItem key={req._id}>
-            <ListItemText primary={req.sender.name} secondary={req.sender.email} />
-            <Button onClick={() => handleAccept(req._id)}>Accept</Button>
-            <Button onClick={() => handleReject(req._id)}>Reject</Button>
-          </ListItem>
-        ))}
-      </List>
+      {requests.length > 0 ? (
+        <List>
+          {requests.map((req) => (
+            <ListItem key={req._id}>
+              <ListItemText primary={req.sender.name} secondary={req.sender.email} />
+              <Button onClick={() => handleAccept(req._id)}>Accept</Button>
+              <Button onClick={() => handleReject(req._id)}>Reject</Button>
+            </ListItem>
+          ))}
+        </List>
+      ) : (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Typography variant="h6" color="textSecondary">
+            No requests remaining
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleGoToProfile} 
+            style={{ marginTop: '20px' }}
+          >
+            Go to Profile
+          </Button>
+        </div>
+      )}
     </Container>
   );
 };
