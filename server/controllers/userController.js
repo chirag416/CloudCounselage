@@ -210,7 +210,6 @@ const acceptConnectionRequest = async (req, res) => {
 };
 
 // Reject Connection Request
-// Reject Connection Request
 const rejectConnectionRequest = async (req, res) => {
   try {
     const { userId, requestId } = req.params;
@@ -240,6 +239,29 @@ const rejectConnectionRequest = async (req, res) => {
   }
 };
 
+const addExperience = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { title, company, startDate, endDate, description } = req.body;
+    const newExperience = { title, company, startDate, endDate, description };
+
+    user.experiences.push(newExperience);
+    await user.save();
+
+    res.json({
+      message: 'Experience added successfully',
+      experiences: user.experiences,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+};
+
+
 
 module.exports = {
   registerUser,
@@ -249,5 +271,6 @@ module.exports = {
   connectUser,
   getConnectionRequests,
   acceptConnectionRequest,
-  rejectConnectionRequest
+  rejectConnectionRequest,
+  addExperience
 };

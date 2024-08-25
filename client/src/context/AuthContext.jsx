@@ -88,8 +88,43 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateExperiences = async (userId, experience) => {
+    try {
+      console.log('Updating experiences for user:', userId, experience);
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/experiences`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify(experience),
+      });
+
+      if (!response.ok) throw new Error('Failed to update experiences');
+
+      const updatedUser = await response.json();
+      console.log('Updated user data:', updatedUser);
+
+      setUser((prevUser) => ({
+        ...prevUser,
+        experiences: updatedUser.experiences || []
+      }));
+
+      localStorage.setItem('user', JSON.stringify({
+        ...user,
+        experiences: updatedUser.experiences || []
+      }));
+      
+      return updatedUser;
+    } catch (error) {
+      toast.error('Failed to update experiences');
+      console.error('Update experiences error:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateSkills }}>
+    <AuthContext.Provider value={{user, login, logout, updateSkills, updateExperiences }}>
       {children}
     </AuthContext.Provider>
   );

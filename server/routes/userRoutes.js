@@ -1,4 +1,3 @@
-// routes/userRoutes.js
 const express = require('express');
 const {
   registerUser,
@@ -8,7 +7,8 @@ const {
   connectUser,
   getConnectionRequests,
   acceptConnectionRequest,
-  rejectConnectionRequest
+  rejectConnectionRequest,
+  addExperience
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -22,13 +22,13 @@ router.get('/search', searchUsers);
 // Protected Routes
 router.use(protect);  // Apply to all routes below this point
 
-router.put('/:id/skills',protect, addSkill);  // Use PUT to update skills
+router.put('/:id/skills', addSkill);  // Use PUT to update skills
 router.post('/connect/:id', connectUser);
 router.get('/:id/requests', getConnectionRequests);
-router.post('/:userId/requests/:requestId/accept', (req, res, next) => {
-  console.log('Accept connection request route hit:', req.params);
-  next();
-}, protect, acceptConnectionRequest);
+router.post('/:userId/requests/:requestId/accept', acceptConnectionRequest);
 router.post('/:userId/requests/:requestId/reject', rejectConnectionRequest);
+// Add this route to your userRoutes.js
+router.post('/:userId/experiences', addExperience);
+
 
 module.exports = router;
