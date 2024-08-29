@@ -1,24 +1,47 @@
 import React, { useState } from 'react';
-import { TextField, Button, List, ListItem, ListItemText } from '@mui/material';
+import { TextField, Button, List, ListItem, ListItemText, Typography, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Search = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const currentUserId = JSON.parse(localStorage.getItem('user'))?._id; // Get current user ID
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const currentUserId = JSON.parse(localStorage.getItem('user'))?._id;
 
   const handleSearch = async () => {
+    if (query.trim() === '') {
+      toast.error('Search query cannot be empty');
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
     try {
       const response = await fetch(`http://localhost:3000/api/users/search?query=${query}`);
       if (!response.ok) {
         throw new Error(`Search failed: ${response.statusText}`);
       }
       const data = await response.json();
-      // Exclude the current user from search results
-      const filteredResults = data.filter(user => user._id !== currentUserId);
+      
+      // Exclude the current user and ensure case-insensitive match
+      const filteredResults = data
+        .filter(user => user._id !== currentUserId)
+        .filter(user => user.name.toLowerCase().includes(query.toLowerCase()));
+
       setResults(filteredResults);
+      
+      if (filteredResults.length === 0) {
+        toast.info('No users found');
+      }
     } catch (error) {
+      setError(error.message);
       toast.error(`Failed to search users: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,6 +74,10 @@ const Search = () => {
     }
   };
 
+  const handleViewProfile = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
     <div>
       <TextField
@@ -58,15 +85,42 @@ const Search = () => {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search users by name"
         fullWidth
+        variant="outlined"
       />
-      <Button onClick={handleSearch}>Search</Button>
+      <Button onClick={handleSearch} variant="contained" color="primary" sx={{ mt: 2 }}>
+        Search
+      </Button>
+      
+      {isLoading && <Typography>Loading...</Typography>}
+      
+      {error && <Typography color="error">{error}</Typography>}
+      
       <List>
-        {results.map((user) => (
-          <ListItem key={user._id}>
-            <ListItemText primary={user.name} secondary={user.email} />
-            <Button onClick={() => handleConnect(user._id)}>Connect</Button>
-          </ListItem>
-        ))}
+        {results.length > 0 ? (
+          results.map((user) => (
+            <ListItem key={user._id}>
+              <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+                <ListItemText primary={user.name} />
+                <Box sx={{ ml: 2 }}> {/* Add margin-left to create space */}
+                  <Button 
+                    onClick={() => handleConnect(user._id)} 
+                    variant="contained" 
+                    color="primary" 
+                    sx={{ mr: 1 }}
+                  >
+                    Connect
+                  </Button>
+                  <Button 
+                    onClick={() => handleViewProfile(user._id)} 
+                    variant="outlined"
+                  >
+                    View Profile
+                  </Button>
+                </Box>
+              </Box>
+            </ListItem>
+          ))
+        ) : null}
       </List>
     </div>
   );

@@ -9,6 +9,7 @@ import NotFound from './pages/NotFound';
 import RequestsPage from './components/Dashboard/RequestsPage';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import Jobs from './pages/Jobs';
 
 const App = () => {
   return (
@@ -20,8 +21,11 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/jobs" element={<Jobs />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/requests" element={<RequestsPage />} />
+          {/* <Route path="/profile/:userId" element={<UserProfile />} /> */}
+
         </Routes>
       </Router>
     </AuthProvider>

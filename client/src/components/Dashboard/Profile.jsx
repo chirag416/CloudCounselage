@@ -1,17 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { 
-  Container, 
-  Typography, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  Divider, 
-  TextField, 
-  Button, 
-  Box, 
-  MenuItem,
-  Avatar 
+import {
+  Container, Typography, List, ListItem, ListItemText,
+  TextField, Button, Box, MenuItem, Avatar, IconButton, Divider
 } from '@mui/material';
+import { Work as WorkIcon } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import AuthContext from '../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -38,16 +30,23 @@ const Section = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
 
+const ContainerStyled = styled(Container)(({ theme }) => ({
+  width: '70vw',
+}));
+
+const SearchStyled = styled(Search)(({ theme }) => ({
+  width: '20vw',
+}));
+
 const years = Array.from(new Array(50), (val, index) => new Date().getFullYear() - index);
 
 const months = [
-  'January', 'February', 'March', 'April', 'May', 'June', 
+  'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
 const Profile = () => {
   const { user, updateSkills, updateExperiences, logout } = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
   const [newSkill, setNewSkill] = useState('');
   const [newExperience, setNewExperience] = useState({
     title: '',
@@ -61,9 +60,7 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      setLoading(false);
-    } else {
+    if (!user) {
       navigate('/login');
     }
   }, [user, navigate]);
@@ -74,7 +71,6 @@ const Profile = () => {
       return;
     }
     try {
-      console.log('Adding skill:', newSkill);
       await updateSkills(user._id, newSkill);
       setNewSkill('');
       toast.success('Skill added successfully');
@@ -90,7 +86,6 @@ const Profile = () => {
       return;
     }
     try {
-      console.log('Adding experience:', newExperience);
       await updateExperiences(user._id, {
         title,
         company,
@@ -124,23 +119,28 @@ const Profile = () => {
     return `${months[parseInt(month, 10) - 1]} ${year}`;
   };
 
-  if (loading) {
+  if (!user) {
     return <Typography>Loading...</Typography>;
   }
 
   return (
-    <Container component="main" maxWidth="md" sx={{ mt: 8 }}>
-      <Search />
-      <MailIconComponent />
+    <ContainerStyled component="main" maxWidth="md" sx={{ mt: 8 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <SearchStyled />
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconButton onClick={() => navigate('/jobs')}>
+            <WorkIcon /> {/* Jobs Icon */}
+          </IconButton>
+        </Box>
+        <MailIconComponent />
+      </Box>
+
       <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
         <ProfileHeader>
           <Box display="flex" alignItems="center">
             <ProfileAvatar>{user.name.charAt(0)}</ProfileAvatar>
             <Box>
               <Typography variant="h4">{user.name}</Typography>
-              <Typography variant="h6" color="textSecondary">
-                {user.email}
-              </Typography>
             </Box>
           </Box>
           <Button variant="outlined" color="secondary" onClick={handleLogout}>
@@ -182,6 +182,31 @@ const Profile = () => {
           </Button>
         </Section>
 
+        <Section>
+          <Typography variant="h5">Experiences</Typography>
+          <List>
+            {user.experiences && user.experiences.length > 0 ? (
+              user.experiences.map((exp, index) => (
+                <React.Fragment key={index}>
+                  <ListItem>
+                    <ListItemText
+                      primary={`${exp.title} at ${exp.company}`}
+                      secondary={`${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
+                    />
+                  </ListItem>
+                  <Typography variant="body2" sx={{ ml: 4, mt: 1 }}>
+                    {exp.description}
+                  </Typography>
+                  {index < user.experiences.length - 1 && <Divider sx={{ my: 2 }} />}
+                </React.Fragment>
+              ))
+            ) : (
+              <Typography color="textSecondary">No experiences available.</Typography>
+            )}
+          </List>
+        </Section>
+
+        
         <Section>
           <Typography variant="h5">Add Experience</Typography>
           <TextField
@@ -289,31 +314,9 @@ const Profile = () => {
           </Button>
         </Section>
 
-        <Section>
-          <Typography variant="h5">Experiences</Typography>
-          <List>
-            {user.experiences && user.experiences.length > 0 ? (
-              user.experiences.map((exp, index) => (
-                <React.Fragment key={index}>
-                  <ListItem>
-                    <ListItemText
-                      primary={`${exp.title} at ${exp.company}`}
-                      secondary={`${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
-                    />
-                  </ListItem>
-                  <Typography variant="body2" sx={{ ml: 4, mt: 1 }}>
-                    {exp.description}
-                  </Typography>
-                  {index < user.experiences.length - 1 && <Divider sx={{ my: 2 }} />}
-                </React.Fragment>
-              ))
-            ) : (
-              <Typography color="textSecondary">No experiences available.</Typography>
-            )}
-          </List>
-        </Section>
+        
       </Box>
-    </Container>
+    </ContainerStyled>
   );
 };
 

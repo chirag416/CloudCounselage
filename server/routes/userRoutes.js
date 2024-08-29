@@ -8,7 +8,7 @@ const {
   getConnectionRequests,
   acceptConnectionRequest,
   rejectConnectionRequest,
-  addExperience
+  addExperience,
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -29,6 +29,8 @@ router.post('/:userId/requests/:requestId/accept', acceptConnectionRequest);
 router.post('/:userId/requests/:requestId/reject', rejectConnectionRequest);
 // Add this route to your userRoutes.js
 router.post('/:userId/experiences', addExperience);
+
+
 
 
 module.exports = router;
