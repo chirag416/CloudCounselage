@@ -239,6 +239,7 @@ const rejectConnectionRequest = async (req, res) => {
   }
 };
 
+// Adding experience 
 const addExperience = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -261,6 +262,21 @@ const addExperience = async (req, res) => {
   }
 };
 
+// Get User by ID 
+const getUserById = async (req, res) => {
+  try {
+    // Exclude sensitive information like password
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(`Error in getUserById: ${error.message}`);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 
 module.exports = {
@@ -272,5 +288,6 @@ module.exports = {
   getConnectionRequests,
   acceptConnectionRequest,
   rejectConnectionRequest,
-  addExperience
+  addExperience,
+  getUserById
 };

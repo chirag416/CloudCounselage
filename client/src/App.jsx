@@ -10,6 +10,7 @@ import RequestsPage from './components/Dashboard/RequestsPage';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Jobs from './pages/Jobs';
+import UserProfile from './pages/UserProfile';
 
 const App = () => {
   return (
@@ -24,8 +25,7 @@ const App = () => {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/requests" element={<RequestsPage />} />
-          {/* <Route path="/profile/:userId" element={<UserProfile />} /> */}
-
+          <Route path="/profile/:userId" element={<UserProfile />} />
         </Routes>
       </Router>
     </AuthProvider>

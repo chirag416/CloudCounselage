@@ -1,5 +1,14 @@
+// src/components/SearchComponent.js
 import React, { useState } from 'react';
-import { TextField, Button, List, ListItem, ListItemText, Typography, Box } from '@mui/material';
+import {
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Box,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -16,24 +25,24 @@ const Search = () => {
       toast.error('Search query cannot be empty');
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`http://localhost:3000/api/users/search?query=${query}`);
       if (!response.ok) {
         throw new Error(`Search failed: ${response.statusText}`);
       }
       const data = await response.json();
-      
+
       // Exclude the current user and ensure case-insensitive match
       const filteredResults = data
         .filter(user => user._id !== currentUserId)
         .filter(user => user.name.toLowerCase().includes(query.toLowerCase()));
 
       setResults(filteredResults);
-      
+
       if (filteredResults.length === 0) {
         toast.info('No users found');
       }
@@ -75,7 +84,7 @@ const Search = () => {
   };
 
   const handleViewProfile = (userId) => {
-    navigate(`/profile/${userId}`);
+    navigate(`/profile/${userId}`); // Navigate to the new UserProfile route
   };
 
   return (
@@ -90,28 +99,28 @@ const Search = () => {
       <Button onClick={handleSearch} variant="contained" color="primary" sx={{ mt: 2 }}>
         Search
       </Button>
-      
+
       {isLoading && <Typography>Loading...</Typography>}
-      
+
       {error && <Typography color="error">{error}</Typography>}
-      
+
       <List>
         {results.length > 0 ? (
           results.map((user) => (
             <ListItem key={user._id}>
               <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
                 <ListItemText primary={user.name} />
-                <Box sx={{ ml: 2 }}> {/* Add margin-left to create space */}
-                  <Button 
-                    onClick={() => handleConnect(user._id)} 
-                    variant="contained" 
-                    color="primary" 
+                <Box sx={{ ml: 2 }}>
+                  <Button
+                    onClick={() => handleConnect(user._id)}
+                    variant="contained"
+                    color="primary"
                     sx={{ mr: 1 }}
                   >
                     Connect
                   </Button>
-                  <Button 
-                    onClick={() => handleViewProfile(user._id)} 
+                  <Button
+                    onClick={() => handleViewProfile(user._id)}
                     variant="outlined"
                   >
                     View Profile
