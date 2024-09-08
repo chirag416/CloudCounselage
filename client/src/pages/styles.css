@@ -1,0 +1,39 @@
+/* styles.css */
+
+/* Animation for the main heading */
+@keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Style for the heading with animation */
+  .header-title {
+    animation: fadeInUp 1s ease-out;
+  }
+  
+  /* Styling for CareerConnect */
+  .career-text {
+    color: black;
+  }
+  
+  .connect-text {
+    color: #0073b1; /* LinkedIn blue */
+  }
+  
+  /* Additional content section */
+  .additional-content {
+    margin-top: 40px;
+    text-align: left;
+  }
+  
+  /* Button styling */
+  .button-container {
+    margin-top: 40px;
+  }
+  
