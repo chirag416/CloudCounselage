@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import AuthContext from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import './styles.css'; // Make sure this file contains your CSS
+import './styles.css'; // Ensure this file contains your CSS
 
 const UserProfile = () => {
   const { user: currentUser } = useContext(AuthContext);

@@ -31,15 +31,20 @@ const Section = styled(Box)(({ theme }) => ({
 }));
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
-  width: '70vw',
+  width: '80vw',
+  maxWidth: '1200px',
+  padding: theme.spacing(4),
 }));
 
 const SearchStyled = styled(Search)(({ theme }) => ({
-  width: '20vw',
+  width: '100%',
+}));
+
+const FormSection = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(3),
 }));
 
 const years = Array.from(new Array(50), (val, index) => new Date().getFullYear() - index);
-
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
@@ -85,6 +90,10 @@ const Profile = () => {
       toast.error('All fields are required');
       return;
     }
+    if (description.split('').length > 50) {
+      toast.error('Description cannot exceed 50 words');
+      return;
+    }
     try {
       await updateExperiences(user._id, {
         title,
@@ -124,23 +133,24 @@ const Profile = () => {
   }
 
   return (
-    <ContainerStyled component="main" maxWidth="md" sx={{ mt: 8 }}>
+    <ContainerStyled component="main">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <SearchStyled />
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={() => navigate('/jobs')}>
-            <WorkIcon /> {/* Jobs Icon */}
+          <IconButton onClick={() => navigate('/jobs')} color="primary">
+            <WorkIcon />
           </IconButton>
         </Box>
         <MailIconComponent />
       </Box>
 
-      <Box sx={{ padding: 4, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+      <Box sx={{ padding: 4, backgroundColor: '#fafafa', borderRadius: 2 }}>
         <ProfileHeader>
           <Box display="flex" alignItems="center">
             <ProfileAvatar>{user.name.charAt(0)}</ProfileAvatar>
             <Box>
               <Typography variant="h4">{user.name}</Typography>
+              <Typography variant="subtitle1" color="textSecondary">{user.email}</Typography>
             </Box>
           </Box>
           <Button variant="outlined" color="secondary" onClick={handleLogout}>
@@ -149,7 +159,7 @@ const Profile = () => {
         </ProfileHeader>
 
         <Section>
-          <Typography variant="h5">Skills</Typography>
+          <Typography variant="h5" gutterBottom>Skills</Typography>
           <List>
             {user.skills && user.skills.length > 0 ? (
               user.skills.map((skill, index) => (
@@ -161,29 +171,31 @@ const Profile = () => {
               <Typography color="textSecondary">No skills available. Add some skills to get started!</Typography>
             )}
           </List>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            id="newSkill"
-            label="Add New Skill"
-            name="newSkill"
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddSkill}
-            sx={{ mt: 2 }}
-          >
-            Add Skill
-          </Button>
+          <FormSection>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              id="newSkill"
+              label="Add New Skill"
+              name="newSkill"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddSkill}
+              sx={{ mt: 2 }}
+            >
+              Add Skill
+            </Button>
+          </FormSection>
         </Section>
 
         <Section>
-          <Typography variant="h5">Experiences</Typography>
+          <Typography variant="h5" gutterBottom>Experiences</Typography>
           <List>
             {user.experiences && user.experiences.length > 0 ? (
               user.experiences.map((exp, index) => (
@@ -206,9 +218,8 @@ const Profile = () => {
           </List>
         </Section>
 
-        
         <Section>
-          <Typography variant="h5">Add Experience</Typography>
+          <Typography variant="h5" gutterBottom>Add Experience</Typography>
           <TextField
             variant="outlined"
             margin="normal"
@@ -231,7 +242,7 @@ const Profile = () => {
             onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
             sx={{ mt: 2 }}
           />
-          <Box display="flex" justifyContent="space-between">
+          <Box display="flex" gap={2} mb={2}>
             <TextField
               select
               variant="outlined"
@@ -240,7 +251,7 @@ const Profile = () => {
               label="Start Month"
               value={newExperience.startMonth}
               onChange={(e) => setNewExperience({ ...newExperience, startMonth: e.target.value })}
-              sx={{ mt: 2, width: '45%' }}
+              sx={{ flex: 1 }}
             >
               {months.map((month, index) => (
                 <MenuItem key={index} value={month}>{month}</MenuItem>
@@ -254,14 +265,14 @@ const Profile = () => {
               label="Start Year"
               value={newExperience.startYear}
               onChange={(e) => setNewExperience({ ...newExperience, startYear: e.target.value })}
-              sx={{ mt: 2, width: '45%' }}
+              sx={{ flex: 1 }}
             >
               {years.map((year) => (
                 <MenuItem key={year} value={year}>{year}</MenuItem>
               ))}
             </TextField>
           </Box>
-          <Box display="flex" justifyContent="space-between">
+          <Box display="flex" gap={2} mb={2}>
             <TextField
               select
               variant="outlined"
@@ -270,7 +281,7 @@ const Profile = () => {
               label="End Month"
               value={newExperience.endMonth}
               onChange={(e) => setNewExperience({ ...newExperience, endMonth: e.target.value })}
-              sx={{ mt: 2, width: '45%' }}
+              sx={{ flex: 1 }}
             >
               {months.map((month, index) => (
                 <MenuItem key={index} value={month}>{month}</MenuItem>
@@ -284,7 +295,7 @@ const Profile = () => {
               label="End Year"
               value={newExperience.endYear}
               onChange={(e) => setNewExperience({ ...newExperience, endYear: e.target.value })}
-              sx={{ mt: 2, width: '45%' }}
+              sx={{ flex: 1 }}
             >
               {years.map((year) => (
                 <MenuItem key={year} value={year}>{year}</MenuItem>
@@ -313,8 +324,6 @@ const Profile = () => {
             Add Experience
           </Button>
         </Section>
-
-        
       </Box>
     </ContainerStyled>
   );
