@@ -1,4 +1,3 @@
-// src/components/SearchComponent.js
 import React, { useState } from 'react';
 import {
   TextField,
@@ -36,10 +35,8 @@ const Search = () => {
       }
       const data = await response.json();
 
-      // Exclude the current user and ensure case-insensitive match
-      const filteredResults = data
-        .filter(user => user._id !== currentUserId)
-        .filter(user => user.name.toLowerCase().includes(query.toLowerCase()));
+      // Exclude the current user
+      const filteredResults = data.filter(user => user._id !== currentUserId);
 
       setResults(filteredResults);
 
@@ -84,7 +81,7 @@ const Search = () => {
   };
 
   const handleViewProfile = (userId) => {
-    navigate(`/profile/${userId}`); // Navigate to the new UserProfile route
+    navigate(`/profile/${userId}`);
   };
 
   return (
@@ -116,6 +113,7 @@ const Search = () => {
                     variant="contained"
                     color="primary"
                     sx={{ mr: 1 }}
+                    disabled={user.connections && user.connections.includes(currentUserId)}
                   >
                     Connect
                   </Button>

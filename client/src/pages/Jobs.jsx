@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, List, ListItem, ListItemText, IconButton, Box } from '@mui/material';
+import { Container, Typography, List, ListItem, ListItemText, IconButton, Box, Button } from '@mui/material';
 import { styled } from '@mui/system';
 import HomeIcon from '@mui/icons-material/Home';
 import WorkIcon from '@mui/icons-material/Work';
 import MailIconComponent from '../components/Dashboard/MailIconComponent';
 import { useNavigate } from 'react-router-dom';
 
-
 const ContainerStyled = styled(Container)(({ theme }) => ({
   width: '70vw',
   marginTop: theme.spacing(8),
 }));
-
 
 const Navbar = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -57,7 +55,14 @@ const Jobs = () => {
       <Typography variant="h4" gutterBottom>Available Jobs</Typography>
       <List>
         {jobs.map((job) => (
-          <ListItem key={job._id}>
+          <ListItem key={job._id} secondaryAction={
+            <Button 
+              variant="contained" 
+              color="primary" 
+            >
+              Apply
+            </Button>
+          }>
             <ListItemText primary={job.title} secondary={`${job.company} - ${job.location}`} />
           </ListItem>
         ))}
