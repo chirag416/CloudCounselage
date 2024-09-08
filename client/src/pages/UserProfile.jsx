@@ -1,4 +1,3 @@
-// src/components/UserProfile.js
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -13,28 +12,9 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
-import { styled } from '@mui/system';
 import AuthContext from '../context/AuthContext';
 import { toast } from 'react-toastify';
-
-// Styled Components
-const ProfileHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingBottom: theme.spacing(2),
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const ProfileAvatar = styled(Avatar)(({ theme }) => ({
-  width: theme.spacing(10),
-  height: theme.spacing(10),
-  marginRight: theme.spacing(2),
-}));
-
-const Section = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(4),
-}));
+import './styles.css'; // Make sure this file contains your CSS
 
 const UserProfile = () => {
   const { user: currentUser } = useContext(AuthContext);
@@ -51,7 +31,6 @@ const UserProfile = () => {
         const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
           headers: {
             'Content-Type': 'application/json',
-            // Include Authorization if the endpoint is protected
             Authorization: `Bearer ${currentUser?.token}`,
           },
         });
@@ -105,26 +84,27 @@ const UserProfile = () => {
   }
 
   return (
-    <Container component="main" maxWidth="md" sx={{ mt: 8 }}>
-      <ProfileHeader>
+    <Container component="main" maxWidth="md" className="user-profile-container">
+      <Box className="profile-header">
         <Box display="flex" alignItems="center">
-          <ProfileAvatar>{profileUser.name.charAt(0).toUpperCase()}</ProfileAvatar>
+          <Avatar src={profileUser.avatarUrl} className="profile-avatar">
+            {profileUser.name.charAt(0).toUpperCase()}
+          </Avatar>
           <Box>
             <Typography variant="h4">{profileUser.name}</Typography>
-            <Typography variant="subtitle1">{profileUser.email}</Typography>
           </Box>
         </Box>
         <Button variant="outlined" color="secondary" onClick={() => navigate(-1)}>
           Back
         </Button>
-      </ProfileHeader>
+      </Box>
 
-      <Section>
-        <Typography variant="h5">Skills</Typography>
+      <Box className="section">
+        <Typography variant="h5" className="section-title">Skills</Typography>
         <List>
           {profileUser.skills && profileUser.skills.length > 0 ? (
             profileUser.skills.map((skill, index) => (
-              <ListItem key={index}>
+              <ListItem key={index} className="list-item">
                 <ListItemText primary={skill} />
               </ListItem>
             ))
@@ -132,33 +112,37 @@ const UserProfile = () => {
             <Typography color="textSecondary">No skills available.</Typography>
           )}
         </List>
-      </Section>
+      </Box>
 
-      <Section>
-        <Typography variant="h5">Experiences</Typography>
+      <Box className="section">
+        <Typography variant="h5" className="section-title">Experiences</Typography>
         <List>
           {profileUser.experiences && profileUser.experiences.length > 0 ? (
             profileUser.experiences.map((exp, index) => (
               <React.Fragment key={index}>
-                <ListItem>
-                  <ListItemText
-                    primary={`${exp.title} at ${exp.company}`}
-                    secondary={`${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
-                  />
+                <ListItem className="list-item">
+                  <Box className="experience-details">
+                    <ListItemText
+                      primary={<strong>{`${exp.title} at ${exp.company}`}</strong>}
+                      secondary={`${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
+                    />
+                    {exp.description && (
+                      <Box className="experience-description">
+                        <Typography variant="body2">
+                          {exp.description}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
                 </ListItem>
-                {exp.description && (
-                  <Typography variant="body2" sx={{ ml: 4, mt: 1 }}>
-                    {exp.description}
-                  </Typography>
-                )}
-                {index < profileUser.experiences.length - 1 && <Divider sx={{ my: 2 }} />}
+                {index < profileUser.experiences.length - 1 && <Divider className="divider" />}
               </React.Fragment>
             ))
           ) : (
             <Typography color="textSecondary">No experiences available.</Typography>
           )}
         </List>
-      </Section>
+      </Box>
     </Container>
   );
 };
