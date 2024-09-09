@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import {
   Container, Typography, List, ListItem, ListItemText,
-  TextField, Button, Box, MenuItem, Avatar, IconButton, Divider
+  TextField, Button, Box, MenuItem, Avatar, IconButton, Divider, Paper
 } from '@mui/material';
 import { Work as WorkIcon } from '@mui/icons-material';
 import { styled } from '@mui/system';
@@ -11,19 +11,31 @@ import { useNavigate } from 'react-router-dom';
 import Search from './SearchComponent';
 import MailIconComponent from './MailIconComponent';
 
+// Define a vibrant color palette
+const themeColors = {
+  primary: '#1E90FF', // Dodger Blue
+  secondary: '#FF6347', // Tomato
+  background: '#F0F8FF', // Alice Blue
+  textPrimary: '#333333', // Dark Gray
+  textSecondary: '#666666', // Medium Gray
+  border: '#E0E0E0', // Light Gray
+};
+
 // Styled components
 const ProfileHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   paddingBottom: theme.spacing(2),
-  borderBottom: `1px solid ${theme.palette.divider}`,
+  borderBottom: `1px solid ${themeColors.border}`,
 }));
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(10),
   height: theme.spacing(10),
   marginRight: theme.spacing(2),
+  backgroundColor: themeColors.secondary,
+  color: '#FFFFFF',
 }));
 
 const Section = styled(Box)(({ theme }) => ({
@@ -34,6 +46,7 @@ const ContainerStyled = styled(Container)(({ theme }) => ({
   width: '80vw',
   maxWidth: '1200px',
   padding: theme.spacing(4),
+  backgroundColor: themeColors.background,
 }));
 
 const SearchStyled = styled(Search)(({ theme }) => ({
@@ -42,6 +55,40 @@ const SearchStyled = styled(Search)(({ theme }) => ({
 
 const FormSection = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3),
+}));
+
+const SkillsSection = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: '#FFFFFF',
+  boxShadow: `0px 4px 8px rgba(0, 0, 0, 0.1)`,
+  borderRadius: theme.shape.borderRadius,
+}));
+
+const ExperienceSection = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: '#FFFFFF',
+  boxShadow: `0px 4px 8px rgba(0, 0, 0, 0.1)`,
+  borderRadius: theme.shape.borderRadius,
+}));
+
+const SkillItem = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(1),
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${themeColors.border}`,
+  marginBottom: theme.spacing(1),
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: '#FFFFFF',
+  boxShadow: `0px 2px 4px rgba(0, 0, 0, 0.05)`,
+}));
+
+const ExperienceItem = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${themeColors.border}`,
+  marginBottom: theme.spacing(2),
+  backgroundColor: '#FFFFFF',
+  boxShadow: `0px 2px 4px rgba(0, 0, 0, 0.05)`,
 }));
 
 const years = Array.from(new Array(50), (val, index) => new Date().getFullYear() - index);
@@ -62,6 +109,8 @@ const Profile = () => {
     endYear: '',
     description: '',
   });
+  const [showAddSkill, setShowAddSkill] = useState(false);
+  const [showAddExperience, setShowAddExperience] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,7 +139,7 @@ const Profile = () => {
       toast.error('All fields are required');
       return;
     }
-    if (description.split('').length > 50) {
+    if (description.split(' ').length > 50) {
       toast.error('Description cannot exceed 50 words');
       return;
     }
@@ -144,185 +193,210 @@ const Profile = () => {
         <MailIconComponent />
       </Box>
 
-      <Box sx={{ padding: 4, backgroundColor: '#fafafa', borderRadius: 2 }}>
+      <Box sx={{ padding: 4, borderRadius: 2 }}>
         <ProfileHeader>
           <Box display="flex" alignItems="center">
             <ProfileAvatar>{user.name.charAt(0)}</ProfileAvatar>
             <Box>
               <Typography variant="h4">{user.name}</Typography>
-              <Typography variant="subtitle1" color="textSecondary">{user.email}</Typography>
             </Box>
           </Box>
-          <Button variant="outlined" color="secondary" onClick={handleLogout}>
+          <Button variant="outlined" color="inherit" onClick={handleLogout}>
             Logout
           </Button>
         </ProfileHeader>
 
         <Section>
-          <Typography variant="h5" gutterBottom>Skills</Typography>
-          <List>
-            {user.skills && user.skills.length > 0 ? (
-              user.skills.map((skill, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={skill} />
-                </ListItem>
-              ))
-            ) : (
-              <Typography color="textSecondary">No skills available. Add some skills to get started!</Typography>
-            )}
-          </List>
-          <FormSection>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              id="newSkill"
-              label="Add New Skill"
-              name="newSkill"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
-              sx={{ mt: 2 }}
-            />
+          <SkillsSection>
+            <Typography variant="h5" gutterBottom>Skills</Typography>
+            <List>
+              {user.skills && user.skills.length > 0 ? (
+                user.skills.map((skill, index) => (
+                  <SkillItem key={index}>
+                    <Typography variant="body1" color={themeColors.textPrimary}>{skill}</Typography>
+                  </SkillItem>
+                ))
+              ) : (
+                <Typography color={themeColors.textSecondary}>No skills available. Add some skills to get started!</Typography>
+              )}
+            </List>
             <Button
               variant="contained"
               color="primary"
-              onClick={handleAddSkill}
-              sx={{ mt: 2 }}
+              onClick={() => setShowAddSkill(prev => !prev)}
+              sx={{ mt: 2, mb: 2 }}
             >
-              Add Skill
+              {showAddSkill ? 'Cancel' : 'Add Skill'}
             </Button>
-          </FormSection>
+            {showAddSkill && (
+              <FormSection>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  id="newSkill"
+                  label="Add New Skill"
+                  name="newSkill"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  sx={{ mt: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddSkill}
+                  sx={{ mt: 2 }}
+                >
+                  Add Skill
+                </Button>
+              </FormSection>
+            )}
+          </SkillsSection>
         </Section>
 
         <Section>
-          <Typography variant="h5" gutterBottom>Experiences</Typography>
-          <List>
+          <ExperienceSection>
+            <Typography variant="h5" gutterBottom>Experiences</Typography>
             {user.experiences && user.experiences.length > 0 ? (
               user.experiences.map((exp, index) => (
-                <React.Fragment key={index}>
-                  <ListItem>
-                    <ListItemText
-                      primary={`${exp.title} at ${exp.company}`}
-                      secondary={`${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
-                    />
-                  </ListItem>
-                  <Typography variant="body2" sx={{ ml: 4, mt: 1 }}>
+                <ExperienceItem key={index}>
+                  <Typography variant="h6" color={themeColors.textPrimary}>
+                    {exp.title} at {exp.company}
+                  </Typography>
+                  <Typography variant="subtitle1" color={themeColors.textSecondary}>
+                    {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                  </Typography>
+                  <Typography variant="body2" color={themeColors.textPrimary} sx={{ mt: 1 }}>
                     {exp.description}
                   </Typography>
                   {index < user.experiences.length - 1 && <Divider sx={{ my: 2 }} />}
-                </React.Fragment>
+                </ExperienceItem>
               ))
             ) : (
-              <Typography color="textSecondary">No experiences available.</Typography>
+              <Typography color={themeColors.textSecondary}>No experiences available.</Typography>
             )}
-          </List>
+          </ExperienceSection>
         </Section>
 
         <Section>
-          <Typography variant="h5" gutterBottom>Add Experience</Typography>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            id="title"
-            label="Role"
-            name="title"
-            value={newExperience.title}
-            onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })}
-            sx={{ mt: 2 }}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            id="company"
-            label="Company"
-            name="company"
-            value={newExperience.company}
-            onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
-            sx={{ mt: 2 }}
-          />
-          <Box display="flex" gap={2} mb={2}>
-            <TextField
-              select
-              variant="outlined"
-              margin="normal"
-              id="startMonth"
-              label="Start Month"
-              value={newExperience.startMonth}
-              onChange={(e) => setNewExperience({ ...newExperience, startMonth: e.target.value })}
-              sx={{ flex: 1 }}
+          <ExperienceSection>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setShowAddExperience(prev => !prev)}
+              sx={{ mb: 2 }}
             >
-              {months.map((month, index) => (
-                <MenuItem key={index} value={month}>{month}</MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              select
-              variant="outlined"
-              margin="normal"
-              id="startYear"
-              label="Start Year"
-              value={newExperience.startYear}
-              onChange={(e) => setNewExperience({ ...newExperience, startYear: e.target.value })}
-              sx={{ flex: 1 }}
-            >
-              {years.map((year) => (
-                <MenuItem key={year} value={year}>{year}</MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <Box display="flex" gap={2} mb={2}>
-            <TextField
-              select
-              variant="outlined"
-              margin="normal"
-              id="endMonth"
-              label="End Month"
-              value={newExperience.endMonth}
-              onChange={(e) => setNewExperience({ ...newExperience, endMonth: e.target.value })}
-              sx={{ flex: 1 }}
-            >
-              {months.map((month, index) => (
-                <MenuItem key={index} value={month}>{month}</MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              select
-              variant="outlined"
-              margin="normal"
-              id="endYear"
-              label="End Year"
-              value={newExperience.endYear}
-              onChange={(e) => setNewExperience({ ...newExperience, endYear: e.target.value })}
-              sx={{ flex: 1 }}
-            >
-              {years.map((year) => (
-                <MenuItem key={year} value={year}>{year}</MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Description"
-            name="description"
-            multiline
-            rows={4}
-            value={newExperience.description}
-            onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
-            sx={{ mt: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddExperience}
-            sx={{ mt: 2 }}
-          >
-            Add Experience
-          </Button>
+              {showAddExperience ? 'Cancel' : 'Add Experience'}
+            </Button>
+            {showAddExperience && (
+              <>
+                <Typography variant="h5" gutterBottom>Add Experience</Typography>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  id="title"
+                  label="Role"
+                  name="title"
+                  value={newExperience.title}
+                  onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })}
+                  sx={{ mt: 2 }}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  id="company"
+                  label="Company"
+                  name="company"
+                  value={newExperience.company}
+                  onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
+                  sx={{ mt: 2 }}
+                />
+                <Box display="flex" gap={2} mb={2}>
+                  <TextField
+                    select
+                    variant="outlined"
+                    margin="normal"
+                    id="startMonth"
+                    label="Start Month"
+                    value={newExperience.startMonth}
+                    onChange={(e) => setNewExperience({ ...newExperience, startMonth: e.target.value })}
+                    sx={{ flex: 1 }}
+                  >
+                    {months.map((month, index) => (
+                      <MenuItem key={index} value={month}>{month}</MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    select
+                    variant="outlined"
+                    margin="normal"
+                    id="startYear"
+                    label="Start Year"
+                    value={newExperience.startYear}
+                    onChange={(e) => setNewExperience({ ...newExperience, startYear: e.target.value })}
+                    sx={{ flex: 1 }}
+                  >
+                    {years.map((year) => (
+                      <MenuItem key={year} value={year}>{year}</MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+                <Box display="flex" gap={2} mb={2}>
+                  <TextField
+                    select
+                    variant="outlined"
+                    margin="normal"
+                    id="endMonth"
+                    label="End Month"
+                    value={newExperience.endMonth}
+                    onChange={(e) => setNewExperience({ ...newExperience, endMonth: e.target.value })}
+                    sx={{ flex: 1 }}
+                  >
+                    {months.map((month, index) => (
+                      <MenuItem key={index} value={month}>{month}</MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    select
+                    variant="outlined"
+                    margin="normal"
+                    id="endYear"
+                    label="End Year"
+                    value={newExperience.endYear}
+                    onChange={(e) => setNewExperience({ ...newExperience, endYear: e.target.value })}
+                    sx={{ flex: 1 }}
+                  >
+                    {years.map((year) => (
+                      <MenuItem key={year} value={year}>{year}</MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  id="description"
+                  label="Description"
+                  name="description"
+                  multiline
+                  rows={4}
+                  value={newExperience.description}
+                  onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
+                  sx={{ mt: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddExperience}
+                  sx={{ mt: 2 }}
+                >
+                  Add Experience
+                </Button>
+              </>
+            )}
+          </ExperienceSection>
         </Section>
       </Box>
     </ContainerStyled>
