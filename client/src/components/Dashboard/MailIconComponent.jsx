@@ -42,7 +42,7 @@ const MailIconComponent = () => {
   };
 
   return (
-    <IconButton color="inherit" onClick={handleClick}>
+    <IconButton color="primary" onClick={handleClick}>
       <Badge badgeContent={connectionRequests.length} color="secondary">
         <MailIcon />
       </Badge>

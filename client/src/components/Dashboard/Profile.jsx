@@ -201,7 +201,7 @@ const Profile = () => {
               <Typography variant="h4">{user.name}</Typography>
             </Box>
           </Box>
-          <Button variant="outlined" color="inherit" onClick={handleLogout}>
+          <Button variant="outlined" color="secondary" onClick={handleLogout}>
             Logout
           </Button>
         </ProfileHeader>

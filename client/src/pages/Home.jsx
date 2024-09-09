@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Container, Typography, Stack, Box, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Facebook, Twitter, LinkedIn, Instagram } from '@mui/icons-material';
 import './styles.css';
 
 const Home = () => {
@@ -103,6 +104,52 @@ const Home = () => {
             Login
           </Button>
         </Stack>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ backgroundColor: theme.palette.grey[200], py: 4, m: 8 }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                About Us
+              </Typography>
+              <Typography variant="body2" paragraph>
+                CareerConnect is dedicated to helping professionals achieve their career goals through networking and job opportunities. Our platform offers a variety of resources to support your professional development.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                Quick Links
+              </Typography>
+              <Stack spacing={1}>
+                <Button color="inherit">About</Button>
+                <Button color="inherit">Contact</Button>
+                <Button color="inherit">Privacy Policy</Button>
+                <Button color="inherit">Terms of Service</Button>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                Follow Us
+              </Typography>
+              <Stack direction="row" spacing={2}>
+                <Button color="inherit">
+                  <Facebook />
+                </Button>
+                <Button color="inherit">
+                  <Twitter />
+                </Button>
+                <Button color="inherit">
+                  <LinkedIn />
+                </Button>
+                <Button color="inherit">
+                  <Instagram />
+                </Button>
+              </Stack>
+            </Grid>
+          </Grid>
+        </Container>
       </Box>
     </Container>
   );
